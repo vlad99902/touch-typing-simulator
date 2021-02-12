@@ -10,20 +10,25 @@ import styled from 'styled-components';
 import { colors } from '../Styles/Colors';
 
 export const TypingDetecting: React.FC = () => {
-  const [text, setText] = useState([]);
-  const [userCurrentPosition, setUserCurrentPosition] = useState(0);
-  const [error, setError] = useState(false);
+  const [text, setText] = useState<string[]>([]);
+  const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
+  const [error, setError] = useState<boolean>(false);
 
   const [beginTimer, setBeginTimer] = useState<number>(+new Date());
-  const [charactersCounter, setCharactersCounter] = useState(0);
-  const [currentSpeed, setCurrentSpeed] = useState(0);
+  const [rightCharactersCounter, setRightCharactersCounter] = useState<number>(
+    0,
+  );
+  const [currentSpeed, setCurrentSpeed] = useState<number>(0);
+
+  const [typingAccuracy, setTypingAccuracy] = useState<number>(100);
+  const [errorsCount, setErrorsCount] = useState<number>(0);
 
   const setStatesToDefault = (): void => {
     setError(false);
     setUserCurrentPosition(0);
     setText([]);
     setBeginTimer(+new Date());
-    setCharactersCounter(0);
+    setRightCharactersCounter(0);
     setCurrentSpeed(0);
   };
 
@@ -37,29 +42,28 @@ export const TypingDetecting: React.FC = () => {
     getText();
   }, []);
 
-  const countCurrentSpeed = (
-    error: boolean,
-    charactersCounter: number,
-  ): void => {
-    if (!error) {
-      const currentTypingTime = +new Date() - beginTimer;
-      setCurrentSpeed(
-        Math.round(charactersCounter / (currentTypingTime / 1000 / 60)),
-      );
-    }
+  const countCurrentSpeed = (charactersCounter: number): void => {
+    setRightCharactersCounter(charactersCounter + 1);
+    const currentTypingTime = +new Date() - beginTimer;
+    setCurrentSpeed(
+      Math.round(charactersCounter / (currentTypingTime / 1000 / 60)),
+    );
+  };
+
+  const countCurrentAccuracy = () => {
+    if (!error)
+      setTypingAccuracy(+(typingAccuracy - (1 / text.length) * 100).toFixed(2));
   };
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value === text[userCurrentPosition]) {
       setUserCurrentPosition(userCurrentPosition + 1);
       setError(false);
-      countCurrentSpeed(false, charactersCounter + 1);
+      countCurrentSpeed(rightCharactersCounter + 1);
     } else {
       setError(true);
-      countCurrentSpeed(true, charactersCounter + 1);
+      countCurrentAccuracy();
     }
-
-    setCharactersCounter(charactersCounter + 1);
 
     event.target.value = '';
   };
@@ -87,13 +91,16 @@ export const TypingDetecting: React.FC = () => {
         <Counter label="Скорость" dataType="зн/мин">
           {currentSpeed}
         </Counter>
+        <Counter label="Точность" dataType="%">
+          {typingAccuracy}
+        </Counter>
         <MainButton
           onClick={() => {
             getText();
             setStatesToDefault();
           }}
         >
-          RefreshText
+          Restart
         </MainButton>
       </Card>
     </Wrapper>

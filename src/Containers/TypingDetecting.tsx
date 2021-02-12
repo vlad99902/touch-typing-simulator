@@ -14,9 +14,21 @@ export const TypingDetecting: React.FC = () => {
   const [userCurrentPosition, setUserCurrentPosition] = useState(0);
   const [error, setError] = useState(false);
 
+  const [beginTimer, setBeginTimer] = useState<number>(+new Date());
+  const [charactersCounter, setCharactersCounter] = useState(0);
+  const [currentSpeed, setCurrentSpeed] = useState(0);
+
+  const setStatesToDefault = (): void => {
+    setError(false);
+    setUserCurrentPosition(0);
+    setText([]);
+    setBeginTimer(+new Date());
+    setCharactersCounter(0);
+    setCurrentSpeed(0);
+  };
+
   const getText = async () => {
     const text = await fetchText();
-
     setUserCurrentPosition(0);
     setText(text.split(''));
   };
@@ -25,13 +37,30 @@ export const TypingDetecting: React.FC = () => {
     getText();
   }, []);
 
+  const countCurrentSpeed = (
+    error: boolean,
+    charactersCounter: number,
+  ): void => {
+    if (!error) {
+      const currentTypingTime = +new Date() - beginTimer;
+      setCurrentSpeed(
+        Math.round(charactersCounter / (currentTypingTime / 1000 / 60)),
+      );
+    }
+  };
+
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value === text[userCurrentPosition]) {
       setUserCurrentPosition(userCurrentPosition + 1);
       setError(false);
+      countCurrentSpeed(false, charactersCounter + 1);
     } else {
       setError(true);
+      countCurrentSpeed(true, charactersCounter + 1);
     }
+
+    setCharactersCounter(charactersCounter + 1);
+
     event.target.value = '';
   };
 
@@ -56,9 +85,16 @@ export const TypingDetecting: React.FC = () => {
           ))}
         </Text>
         <Counter label="Скорость" dataType="зн/мин">
-          {1}
+          {currentSpeed}
         </Counter>
-        <MainButton onClick={() => getText()}>RefreshText</MainButton>
+        <MainButton
+          onClick={() => {
+            getText();
+            setStatesToDefault();
+          }}
+        >
+          RefreshText
+        </MainButton>
       </Card>
     </Wrapper>
   );

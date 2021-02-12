@@ -5,7 +5,7 @@ type TitleTypes = {
   ff?: 'Alegreya Sans';
   fw?: '100' | '300' | '400' | '500' | '700' | '800' | '900';
   color?: string;
-  mb?: string;
+  margin?: string;
 };
 
 export const Title = styled.h1<TitleTypes>`
@@ -14,5 +14,5 @@ export const Title = styled.h1<TitleTypes>`
     props.ff || 'font-family: "Alegreya Sans", sans-serif'};
   font-weight: ${(props) => props.fw || 400};
   color: ${(props) => props.color};
-  margin-bottom: ${(props) => props.mb};
+  margin: ${(props) => props.margin};
 `;

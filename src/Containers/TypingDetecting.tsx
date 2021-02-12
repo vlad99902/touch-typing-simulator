@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Card } from '../Styles/AppStyles';
 import { MainButton } from '../Components/MainButton';
-import { Counter } from '../Components/Counter';
+
 import styled from 'styled-components';
 import { colors } from '../Styles/Colors';
+import { CountersContainer } from './CountersContainer';
 
 export const TypingDetecting: React.FC = () => {
   const [text, setText] = useState<string[]>([]);
@@ -89,23 +90,14 @@ export const TypingDetecting: React.FC = () => {
             </TextLetter>
           ))}
         </Text>
-        <CountersPositioning>
-          <CounterElement>
-            <Counter label="Скорость" dataType="зн/мин">
-              {currentSpeed}
-            </Counter>
-          </CounterElement>
-          <CounterElement>
-            <Counter label="Точность" dataType="%">
-              {typingAccuracy}
-            </Counter>
-          </CounterElement>
-          <CounterElement>
-            <Counter label="Ошибок" dataType="">
-              {errorsCount}
-            </Counter>
-          </CounterElement>
-        </CountersPositioning>
+
+        <CountersContainer
+          typingSpeed={currentSpeed}
+          typingAccuracy={typingAccuracy}
+          errorsCount={errorsCount}
+          margin="0 0 18px"
+        />
+
         <MainButton
           onClick={() => {
             getText();
@@ -147,19 +139,4 @@ const InputUserLetter = styled.input`
   left: 0;
   width: 100%;
   opacity: 0;
-`;
-
-const CountersPositioning = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  margin-bottom: 18px;
-`;
-
-const CounterElement = styled.div`
-  margin-right: 18px;
-  :last-child {
-    margin-right: 0;
-  }
 `;

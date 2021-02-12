@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 type ContainerPropsType = {
   maxWidth?: string;
+  margin?: string;
   padding?: string;
   pos?: 'center';
   posInner?: 'center';
@@ -11,7 +12,8 @@ type ContainerPropsType = {
 export const Container = styled.div<ContainerPropsType>`
   max-width: ${(props) => props.maxWidth || '800px'};
   padding: ${(props) => props.padding || '0 16px'};
-  ${(props) => (props.pos ? 'margin: 0 auto' : 'margin: 0')};
+  margin: ${(props) => props.margin};
+  ${(props) => props.pos && 'margin: 0 auto'};
   ${(props) => {
     if (props.posInner === 'center')
       return 'display: flex; justify-content: center; align-items: center';

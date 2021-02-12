@@ -18,4 +18,9 @@ export const MainHeader: React.FC = () => {
 
 const Wrapper = styled.div`
   background-color: ${colors.$purple};
+
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
 `;

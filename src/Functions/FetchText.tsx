@@ -3,7 +3,8 @@ export const fetchText = async () => {
     const res = await fetch(
       'https://baconipsum.com/api/?type=meat-and-filler&sentences=1',
     );
-    return res.json();
+    const text = await res.json();
+    return text[0];
   } catch (error) {
     console.log(error);
   }

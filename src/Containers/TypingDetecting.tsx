@@ -9,6 +9,8 @@ import { MainButton } from '../Components/MainButton';
 import styled from 'styled-components';
 import { colors } from '../Styles/Colors';
 import { CountersContainer } from './CountersContainer';
+import { Modal } from '../Components/Modal';
+import { Title } from '../Styles/Title';
 
 export const TypingDetecting: React.FC = () => {
   const [text, setText] = useState<string[]>([]);
@@ -23,6 +25,7 @@ export const TypingDetecting: React.FC = () => {
 
   const [typingAccuracy, setTypingAccuracy] = useState<number>(100);
   const [errorsCount, setErrorsCount] = useState<number>(0);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(true);
 
   const setStatesToDefault = (): void => {
     setError(false);
@@ -31,11 +34,12 @@ export const TypingDetecting: React.FC = () => {
     setBeginTimer(+new Date());
     setRightCharactersCounter(0);
     setCurrentSpeed(0);
+    setTypingAccuracy(100);
+    setErrorsCount(0);
   };
 
   const getText = async () => {
     const text = await fetchText();
-    setUserCurrentPosition(0);
     setText(text.split(''));
   };
 
@@ -44,7 +48,7 @@ export const TypingDetecting: React.FC = () => {
   }, []);
 
   const countCurrentSpeed = (charactersCounter: number): void => {
-    setRightCharactersCounter(charactersCounter + 1);
+    setRightCharactersCounter(rightCharactersCounter + 1);
     setCurrentSpeed(
       Math.round(charactersCounter / ((+new Date() - beginTimer) / 1000 / 60)),
     );
@@ -59,9 +63,13 @@ export const TypingDetecting: React.FC = () => {
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value === text[userCurrentPosition]) {
-      setUserCurrentPosition(userCurrentPosition + 1);
       setError(false);
+      setUserCurrentPosition(userCurrentPosition + 1);
       countCurrentSpeed(rightCharactersCounter + 1);
+
+      if (userCurrentPosition + 1 === text.length) {
+        setIsOpenModal(true);
+      }
     } else {
       setError(true);
       countCurrentAccuracy();
@@ -77,6 +85,24 @@ export const TypingDetecting: React.FC = () => {
 
   return (
     <Wrapper>
+      <Modal
+        isOpened={isOpenModal}
+        setIsOpened={() => {
+          setIsOpenModal(false);
+          getText();
+          setStatesToDefault();
+        }}
+        maxWidth="400px"
+      >
+        <Title margin="0 0 18px">Great! Your results here!</Title>
+
+        <CountersContainer
+          typingSpeed={currentSpeed}
+          typingAccuracy={typingAccuracy}
+          errorsCount={errorsCount}
+          margin="0 0 18px"
+        />
+      </Modal>
       <InputUserLetter
         autoFocus
         name="userInputLetter"

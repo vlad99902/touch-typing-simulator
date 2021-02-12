@@ -44,15 +44,16 @@ export const TypingDetecting: React.FC = () => {
 
   const countCurrentSpeed = (charactersCounter: number): void => {
     setRightCharactersCounter(charactersCounter + 1);
-    const currentTypingTime = +new Date() - beginTimer;
     setCurrentSpeed(
-      Math.round(charactersCounter / (currentTypingTime / 1000 / 60)),
+      Math.round(charactersCounter / ((+new Date() - beginTimer) / 1000 / 60)),
     );
   };
 
   const countCurrentAccuracy = () => {
-    if (!error)
+    if (!error) {
+      setErrorsCount(errorsCount + 1);
       setTypingAccuracy(+(typingAccuracy - (1 / text.length) * 100).toFixed(2));
+    }
   };
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,12 +89,23 @@ export const TypingDetecting: React.FC = () => {
             </TextLetter>
           ))}
         </Text>
-        <Counter label="Скорость" dataType="зн/мин">
-          {currentSpeed}
-        </Counter>
-        <Counter label="Точность" dataType="%">
-          {typingAccuracy}
-        </Counter>
+        <CountersPositioning>
+          <CounterElement>
+            <Counter label="Скорость" dataType="зн/мин">
+              {currentSpeed}
+            </Counter>
+          </CounterElement>
+          <CounterElement>
+            <Counter label="Точность" dataType="%">
+              {typingAccuracy}
+            </Counter>
+          </CounterElement>
+          <CounterElement>
+            <Counter label="Ошибок" dataType="">
+              {errorsCount}
+            </Counter>
+          </CounterElement>
+        </CountersPositioning>
         <MainButton
           onClick={() => {
             getText();
@@ -114,6 +126,8 @@ const Wrapper = styled.div`
 
 const Text = styled.p`
   margin-bottom: 18px;
+
+  user-select: none;
 `;
 
 const TextLetter = styled.span<{
@@ -133,4 +147,19 @@ const InputUserLetter = styled.input`
   left: 0;
   width: 100%;
   opacity: 0;
+`;
+
+const CountersPositioning = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  margin-bottom: 18px;
+`;
+
+const CounterElement = styled.div`
+  margin-right: 18px;
+  :last-child {
+    margin-right: 0;
+  }
 `;

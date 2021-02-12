@@ -10,15 +10,19 @@ interface ICounter {
 
 export const Counter: React.FC<ICounter> = ({ children, label, dataType }) => {
   return (
-    <>
+    <Inner>
       <LabelText>{label}</LabelText>
       <div>
         <CounterValue>{children}</CounterValue>
         <CounterDataType>{dataType}</CounterDataType>
       </div>
-    </>
+    </Inner>
   );
 };
+
+const Inner = styled.div`
+  user-select: none;
+`;
 
 const LabelText = styled.h2`
   color: ${colors.$darkGray};

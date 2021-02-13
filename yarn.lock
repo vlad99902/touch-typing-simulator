@@ -1814,6 +1814,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-native@*":
+  version "0.63.48"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.63.48.tgz#83ebffe2900b8dee7e420bad9d8d0efea86efe92"
+  integrity sha512-6+7WsHfVkcYEwO/u3wxarMwZq/mbJZ5iDYCXwX5bs8lm0vEIuBdMsk9jrwxuCBvaXhGdB0lriwTgfew/7VN2Kg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^17.0.0":
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.1.tgz#eb1f1407dea8da3bc741879c1192aa703ab9975b"
@@ -1839,13 +1846,14 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
-"@types/styled-components@^5.1.7":
-  version "5.1.7"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.7.tgz#3cd10b088c1cb1acde2e4b166b3e8275a3083710"
-  integrity sha512-BJzPhFygYspyefAGFZTZ/8lCEY4Tk+Iqktvnko3xmJf9LrLqs3+grxPeU3O0zLl6yjbYBopD0/VikbHgXDbJtA==
+"@types/styled-components@5.1.6":
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.6.tgz#b47460f1684072576999955b5b5153e6f238622c"
+  integrity sha512-YN1j99dOL92T+76qhQcrPUb2nKZLzawko9j3IIwTHdKloMx20WwcGkBwdpbi8SpAkTc362rgfIllqPdSUplmRw==
   dependencies:
     "@types/hoist-non-react-statics" "*"
     "@types/react" "*"
+    "@types/react-native" "*"
     csstype "^3.0.2"
 
 "@types/tapable@*", "@types/tapable@^1.0.5":

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { colors } from '../Styles/Colors';
+import { colors } from '../styles/Colors';
 
 interface ICounter {
   children: number;

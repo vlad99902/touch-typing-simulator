@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Container } from '../Styles/AppStyles';
-import { TypingDetecting } from '../Containers/TypingDetecting';
-import { InfoCard } from '../Containers/InfoCard';
+import { Container } from '../styles/AppStyles';
+import { TypingDetecting } from '../containers/TypingDetecting';
+import { InfoCard } from '../containers/InfoCard';
 import styled from 'styled-components';
 
 export const MainPage: React.FC = () => {
-  const [typingStats, setTypingStats] = useState({
+  const [typingStats, setTypingStats] = useState<{
+    typingSpeed: number;
+    typingAccuracy: number;
+    errorsCount: number;
+  }>({
     typingSpeed: 0,
     typingAccuracy: 0,
     errorsCount: 0,

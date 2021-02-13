@@ -1,18 +1,19 @@
 import React from 'react';
 
-import { fetchText } from '../Functions/FetchText';
+import { fetchText } from '../functions/FetchText';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { Card } from '../Styles/AppStyles';
-import { MainButton } from '../Components/MainButton';
+import { Card } from '../styles/AppStyles';
+import { MainButton } from '../components/MainButton';
 
 import styled from 'styled-components';
-import { colors } from '../Styles/Colors';
+import { colors } from '../styles/Colors';
 import { CountersContainer } from './CountersContainer';
 
-import { WarningLanguageModal } from './Modals/WarningLanguageModal';
-import { ShowResultsModal } from './Modals/ShowResultsModal';
+import { WarningLanguageModal } from './modals/WarningLanguageModal';
+import { ShowResultsModal } from './modals/ResultsModal';
 import { useRef } from 'react';
+import { useStats } from '../hooks/useStats';
 
 export const TypingDetecting: React.FC<{
   setTypingStats: React.Dispatch<
@@ -31,12 +32,17 @@ export const TypingDetecting: React.FC<{
   const [rightCharactersCounter, setRightCharactersCounter] = useState<number>(
     0,
   );
-  const [currentSpeed, setCurrentSpeed] = useState<number>(0);
-
-  const [typingAccuracy, setTypingAccuracy] = useState<number>(100);
-  const [errorsCount, setErrorsCount] = useState<number>(0);
   const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
+
+  const {
+    currentSpeed,
+    typingAccuracy,
+    errorsCount,
+    countCurrentAccuracy,
+    countCurrentSpeed,
+    setStatsToDefault,
+  } = useStats(beginTimer);
 
   const letterInput = useRef<HTMLInputElement>(null);
 
@@ -44,11 +50,9 @@ export const TypingDetecting: React.FC<{
     setError(false);
     setUserCurrentPosition(0);
     setText([]);
-    setBeginTimer(+new Date());
+    // setBeginTimer(+new Date());
     setRightCharactersCounter(0);
-    setCurrentSpeed(0);
-    setTypingAccuracy(100);
-    setErrorsCount(0);
+    setStatsToDefault();
   };
 
   const getText = async () => {
@@ -60,35 +64,35 @@ export const TypingDetecting: React.FC<{
     getText();
   }, []);
 
-  const countCurrentSpeed = (charactersCounter: number): void => {
-    setRightCharactersCounter(rightCharactersCounter + 1);
-    setCurrentSpeed(
-      Math.round(charactersCounter / ((+new Date() - beginTimer) / 1000 / 60)),
-    );
-  };
-
-  const countCurrentAccuracy = () => {
-    if (!error) {
-      setErrorsCount(errorsCount + 1);
-      setTypingAccuracy(+(typingAccuracy - (1 / text.length) * 100).toFixed(2));
+  useEffect(() => {
+    if (userCurrentPosition === 1) {
+      setBeginTimer(+new Date());
     }
-  };
+  }, [userCurrentPosition]);
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const letterCode = event.target.value.charCodeAt(0);
-    if (userCurrentPosition === 0) setBeginTimer(+new Date());
+
+    const letter = event.target.value;
+
     if (letterCode >= 31 && letterCode <= 127)
-      if (event.target.value === text[userCurrentPosition]) {
+      if (letter === text[userCurrentPosition]) {
         setError(false);
         setUserCurrentPosition(userCurrentPosition + 1);
+
         countCurrentSpeed(rightCharactersCounter + 1);
+        setRightCharactersCounter(rightCharactersCounter + 1);
 
         if (userCurrentPosition + 1 === text.length) {
+          //set states to default
           setIsOpenResultModal(true);
         }
       } else {
+        if (!error) {
+          countCurrentAccuracy(text.length);
+        }
+
         setError(true);
-        countCurrentAccuracy();
       }
     else {
       setIsOpenWarningModal(true);
@@ -174,7 +178,6 @@ export const TypingDetecting: React.FC<{
 
 const Wrapper = styled.div`
   position: relative;
-  word-spacing: 3px;
 `;
 
 const Text = styled.p`
@@ -187,6 +190,7 @@ const TextLetter = styled.span<{
   selection?: 'selected' | 'error';
   colorType?: boolean;
 }>`
+  font-family: 'JetBrains Mono', monospace;
   ${(p) => {
     if (p.selection === 'selected')
       return `background-color: ${colors.$green}; border-radius: 2px`;

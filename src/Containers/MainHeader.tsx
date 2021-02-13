@@ -1,8 +1,9 @@
 import React from 'react';
-import { Container } from '../Styles/AppStyles';
+import { Container } from '../styles/AppStyles';
 import styled from 'styled-components';
-import { colors } from '../Styles/Colors';
-import { Title } from '../Styles/Title';
+
+import { Title } from '../styles/Title';
+import { colors } from '../styles/Colors';
 
 export const MainHeader: React.FC = () => {
   return (

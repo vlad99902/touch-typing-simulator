@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '../Styles/AppStyles';
-import { Title } from '../Styles/Title';
+import { Card } from '../styles/AppStyles';
+import { Title } from '../styles/Title';
 import { CountersContainer } from './CountersContainer';
 
 export const InfoCard: React.FC<{

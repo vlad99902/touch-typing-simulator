@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes } from 'react';
 import styled from 'styled-components';
-import { colors } from '../Styles/Colors';
+import { colors } from '../styles/Colors';
 
 interface IMainButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;

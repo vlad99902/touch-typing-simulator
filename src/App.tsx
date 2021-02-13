@@ -1,7 +1,7 @@
 import React from 'react';
-import './App.sass';
-import { MainHeader } from './Containers/MainHeader';
-import { MainPage } from './Pages/MainPage';
+
+import { MainHeader } from './containers/MainHeader';
+import { MainPage } from './pages/MainPage';
 
 function App() {
   return (

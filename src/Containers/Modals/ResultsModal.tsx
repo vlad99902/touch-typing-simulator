@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal } from '../../Components/Modal';
-import { Title } from '../../Styles/Title';
+import { Modal } from '../../components/Modal';
+import { Title } from '../../styles/Title';
 import { CountersContainer } from '../CountersContainer';
 
 interface IWarningLanguageModal {

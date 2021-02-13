@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { MainButton } from '../../Components/MainButton';
-import { Modal } from '../../Components/Modal';
-import { Title } from '../../Styles/Title';
+import { MainButton } from '../../components/MainButton';
+import { Modal } from '../../components/Modal';
+import { Title } from '../../styles/Title';
 
 interface IWarningLanguageModal {
   isOpened: boolean;

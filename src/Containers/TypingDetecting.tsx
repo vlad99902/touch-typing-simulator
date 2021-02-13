@@ -12,6 +12,7 @@ import { CountersContainer } from './CountersContainer';
 
 import { WarningLanguageModal } from './Modals/WarningLanguageModal';
 import { ShowResultsModal } from './Modals/ShowResultsModal';
+import { useRef } from 'react';
 
 export const TypingDetecting: React.FC<{
   setTypingStats: React.Dispatch<
@@ -36,6 +37,8 @@ export const TypingDetecting: React.FC<{
   const [errorsCount, setErrorsCount] = useState<number>(0);
   const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
+
+  const letterInput = useRef<HTMLInputElement>(null);
 
   const setStatesToDefault = (): void => {
     setError(false);
@@ -131,6 +134,10 @@ export const TypingDetecting: React.FC<{
         autoFocus
         name="userInputLetter"
         onChange={(event) => inputChangeHandler(event)}
+        onBlur={() =>
+          letterInput && letterInput.current && letterInput.current.focus()
+        }
+        ref={letterInput}
       />
       <Card>
         <Text>
@@ -194,5 +201,6 @@ const InputUserLetter = styled.input`
   top: 0;
   left: 0;
   width: 100%;
+
   opacity: 0;
 `;

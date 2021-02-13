@@ -13,7 +13,15 @@ import { CountersContainer } from './CountersContainer';
 import { WarningLanguageModal } from './Modals/WarningLanguageModal';
 import { ShowResultsModal } from './Modals/ShowResultsModal';
 
-export const TypingDetecting: React.FC = () => {
+export const TypingDetecting: React.FC<{
+  setTypingStats: React.Dispatch<
+    React.SetStateAction<{
+      typingSpeed: number;
+      typingAccuracy: number;
+      errorsCount: number;
+    }>
+  >;
+}> = ({ setTypingStats }) => {
   const [text, setText] = useState<string[]>([]);
   const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
   const [error, setError] = useState<boolean>(false);
@@ -65,6 +73,7 @@ export const TypingDetecting: React.FC = () => {
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const letterCode = event.target.value.charCodeAt(0);
+    if (userCurrentPosition === 0) setBeginTimer(+new Date());
     if (letterCode >= 31 && letterCode <= 127)
       if (event.target.value === text[userCurrentPosition]) {
         setError(false);
@@ -90,6 +99,14 @@ export const TypingDetecting: React.FC = () => {
     else if (index === userCurrentPosition && error) return 'error';
   };
 
+  const setStyledToEnteredLetters = (
+    index: number,
+    currentIndex: number,
+  ): boolean => {
+    if (index < currentIndex) return true;
+    return false;
+  };
+
   return (
     <Wrapper>
       <WarningLanguageModal
@@ -100,6 +117,11 @@ export const TypingDetecting: React.FC = () => {
         isOpened={isOpenResultModal}
         setIsOpened={() => {
           setIsOpenResultModal(false);
+          setTypingStats({
+            typingSpeed: currentSpeed,
+            typingAccuracy,
+            errorsCount,
+          });
           setStatesToDefault();
           getText();
         }}
@@ -113,7 +135,11 @@ export const TypingDetecting: React.FC = () => {
       <Card>
         <Text>
           {text.map((letter, i) => (
-            <TextLetter selection={setSelectionModeOnLetter(i)} key={i}>
+            <TextLetter
+              selection={setSelectionModeOnLetter(i)}
+              colorType={setStyledToEnteredLetters(i, userCurrentPosition)}
+              key={i}
+            >
               {letter}
             </TextLetter>
           ))}
@@ -152,6 +178,7 @@ const Text = styled.p`
 
 const TextLetter = styled.span<{
   selection?: 'selected' | 'error';
+  colorType?: boolean;
 }>`
   ${(p) => {
     if (p.selection === 'selected')
@@ -159,6 +186,7 @@ const TextLetter = styled.span<{
     if (p.selection === 'error')
       return `background-color: ${colors.$red}; border-radius: 2px`;
   }}
+  ${(p) => p.colorType && `color: ${colors.$blue}`};
 `;
 
 const InputUserLetter = styled.input`

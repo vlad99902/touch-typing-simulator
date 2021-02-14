@@ -100,9 +100,12 @@ export const TypingDetecting: React.FC<{
     event.target.value = '';
   };
 
-  const setSelectionModeOnLetter = (index: number) => {
-    if (index === userCurrentPosition && !error) return 'selected';
-    else if (index === userCurrentPosition && error) return 'error';
+  const setSelectionModeOnLetter = (
+    index: number,
+    currentIndex: number,
+  ): 'selected' | 'error' | undefined => {
+    if (index === currentIndex && !error) return 'selected';
+    else if (index === currentIndex && error) return 'error';
   };
 
   const setStyledToEnteredLetters = (
@@ -146,7 +149,7 @@ export const TypingDetecting: React.FC<{
         <Text>
           {text.map((letter, i) => (
             <TextLetter
-              selection={setSelectionModeOnLetter(i)}
+              selection={setSelectionModeOnLetter(i, userCurrentPosition)}
               colorType={setStyledToEnteredLetters(i, userCurrentPosition)}
               key={i}
             >

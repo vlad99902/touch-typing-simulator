@@ -50,7 +50,6 @@ export const TypingDetecting: React.FC<{
     setError(false);
     setUserCurrentPosition(0);
     setText([]);
-    // setBeginTimer(+new Date());
     setRightCharactersCounter(0);
     setStatsToDefault();
   };
@@ -118,11 +117,11 @@ export const TypingDetecting: React.FC<{
     <Wrapper>
       <WarningLanguageModal
         isOpened={isOpenWarningModal}
-        setIsOpened={setIsOpenWarningModal}
+        onClose={() => setIsOpenWarningModal(false)}
       />
       <ShowResultsModal
         isOpened={isOpenResultModal}
-        setIsOpened={() => {
+        onClose={() => {
           setIsOpenResultModal(false);
           setTypingStats({
             typingSpeed: currentSpeed,
@@ -132,7 +131,7 @@ export const TypingDetecting: React.FC<{
           setStatesToDefault();
           getText();
         }}
-        countersInfo={{ currentSpeed, typingAccuracy, errorsCount }}
+        stats={{ currentSpeed, typingAccuracy, errorsCount }}
       />
       <InputUserLetter
         autoFocus

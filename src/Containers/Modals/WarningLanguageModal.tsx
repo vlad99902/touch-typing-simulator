@@ -1,35 +1,25 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MainButton } from '../../components/MainButton';
 import { Modal } from '../../components/Modal';
+import { useCloseModalOnEnter } from '../../hooks/useCloseModalOnEnter';
 import { Title } from '../../styles/Title';
 
 interface IWarningLanguageModal {
   isOpened: boolean;
-  setIsOpened: (value: boolean) => void;
+  onClose: () => void;
 }
 
 export const WarningLanguageModal: React.FC<IWarningLanguageModal> = ({
   isOpened,
-  setIsOpened,
+  onClose,
 }) => {
-  const keyPressEnter = (e: any) => {
-    if (e.key === 'Enter') setIsOpened(false);
-  };
-
-  useEffect(() => {
-    if (isOpened) {
-      document.addEventListener('keypress', keyPressEnter);
-    }
-    return () => {
-      document.removeEventListener('keypress', keyPressEnter);
-    };
-  }, [isOpened]);
+  useCloseModalOnEnter(isOpened, onClose);
 
   return (
     <Modal
       isOpened={isOpened}
-      setIsOpened={() => {
-        setIsOpened(false);
+      onClose={() => {
+        onClose();
       }}
       maxWidth="400px"
     >
@@ -37,8 +27,8 @@ export const WarningLanguageModal: React.FC<IWarningLanguageModal> = ({
         Please set your keyboard language to English
       </Title>
       <MainButton
-        onClick={(event) => {
-          setIsOpened(false);
+        onClick={() => {
+          onClose();
         }}
       >
         OK

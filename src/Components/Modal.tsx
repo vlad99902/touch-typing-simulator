@@ -4,7 +4,7 @@ import styled from 'styled-components';
 type ModalType = {
   children: React.ReactNode;
   isOpened: boolean;
-  setIsOpened: () => void;
+  onClose: () => void;
   maxWidth?: string;
   padding?: string;
 };
@@ -12,7 +12,7 @@ type ModalType = {
 export const Modal: React.FC<ModalType> = ({
   children,
   isOpened,
-  setIsOpened,
+  onClose,
   maxWidth,
   padding = '24px',
 }) => {
@@ -20,7 +20,7 @@ export const Modal: React.FC<ModalType> = ({
     <>
       {isOpened && (
         <ModalWrapper
-          onMouseDown={() => setIsOpened()}
+          onMouseDown={() => onClose()}
           backdrop={isOpened ? 'blur(15px)' : 'blur(0px)'}
         >
           <ModalContent

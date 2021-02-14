@@ -28,10 +28,6 @@ export const TypingDetecting: React.FC<{
   const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
   const [error, setError] = useState<boolean>(false);
 
-  const [beginTimer, setBeginTimer] = useState<number>(+new Date());
-  const [rightCharactersCounter, setRightCharactersCounter] = useState<number>(
-    0,
-  );
   const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
 
@@ -42,17 +38,10 @@ export const TypingDetecting: React.FC<{
     countCurrentAccuracy,
     countCurrentSpeed,
     setStatsToDefault,
-  } = useStats(beginTimer);
+    setBeginTimer,
+  } = useStats();
 
   const letterInput = useRef<HTMLInputElement>(null);
-
-  const setStatesToDefault = (): void => {
-    setError(false);
-    setUserCurrentPosition(0);
-    setText([]);
-    setRightCharactersCounter(0);
-    setStatsToDefault();
-  };
 
   const getText = async () => {
     const text = await fetchText();
@@ -71,31 +60,27 @@ export const TypingDetecting: React.FC<{
 
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const letterCode = event.target.value.charCodeAt(0);
-
     const letter = event.target.value;
 
-    if (letterCode >= 31 && letterCode <= 127)
-      if (letter === text[userCurrentPosition]) {
-        setError(false);
-        setUserCurrentPosition(userCurrentPosition + 1);
+    if (userCurrentPosition < text.length)
+      if (letterCode >= 31 && letterCode <= 127)
+        if (letter === text[userCurrentPosition]) {
+          setError(false);
+          setUserCurrentPosition(userCurrentPosition + 1);
+          countCurrentSpeed();
 
-        countCurrentSpeed(rightCharactersCounter + 1);
-        setRightCharactersCounter(rightCharactersCounter + 1);
-
-        if (userCurrentPosition + 1 === text.length) {
-          //set states to default
-          setIsOpenResultModal(true);
+          if (userCurrentPosition + 1 === text.length) {
+            setIsOpenResultModal(true);
+          }
+        } else {
+          if (!error) {
+            countCurrentAccuracy(text.length);
+          }
+          setError(true);
         }
-      } else {
-        if (!error) {
-          countCurrentAccuracy(text.length);
-        }
-
-        setError(true);
+      else {
+        setIsOpenWarningModal(true);
       }
-    else {
-      setIsOpenWarningModal(true);
-    }
 
     event.target.value = '';
   };
@@ -116,6 +101,25 @@ export const TypingDetecting: React.FC<{
     return false;
   };
 
+  const setStatesToDefault = (): void => {
+    setError(false);
+    setUserCurrentPosition(0);
+    setText([]);
+    setStatsToDefault();
+  };
+
+  const onCloseShowResultModal = (): void => {
+    const endsSpeed = currentSpeed;
+    setIsOpenResultModal(false);
+    setTypingStats({
+      typingSpeed: endsSpeed,
+      typingAccuracy,
+      errorsCount,
+    });
+    setStatesToDefault();
+    getText();
+  };
+
   return (
     <Wrapper>
       <WarningLanguageModal
@@ -124,16 +128,7 @@ export const TypingDetecting: React.FC<{
       />
       <ShowResultsModal
         isOpened={isOpenResultModal}
-        onClose={() => {
-          setIsOpenResultModal(false);
-          setTypingStats({
-            typingSpeed: currentSpeed,
-            typingAccuracy,
-            errorsCount,
-          });
-          setStatesToDefault();
-          getText();
-        }}
+        onClose={onCloseShowResultModal}
         stats={{ currentSpeed, typingAccuracy, errorsCount }}
       />
       <InputUserLetter

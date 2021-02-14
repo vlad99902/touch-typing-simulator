@@ -1,28 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export const useStats = (startTimer: number) => {
-  const [beginTimer, setBeginTimer] = useState<number>(startTimer);
+export const useStats = () => {
+  const [beginTimer, setBeginTimer] = useState<number>(+new Date());
   const [currentSpeed, setCurrentSpeed] = useState<number>(0);
   const [typingAccuracy, setTypingAccuracy] = useState<number>(100);
   const [errorsCount, setErrorsCount] = useState<number>(0);
-
-  useEffect(() => {
-    setBeginTimer(startTimer);
-  }, [startTimer]);
+  const [rightCharactersCounter, setRightCharactersCounter] = useState<number>(
+    0,
+  );
 
   const setStatsToDefault = (): void => {
     setCurrentSpeed(0);
     setTypingAccuracy(100);
     setErrorsCount(0);
+    setRightCharactersCounter(0);
   };
 
-  const countCurrentSpeed = (charactersEnteredCounter: number): void => {
+  const countCurrentSpeed = (): void => {
     const currentTime = +new Date();
     setCurrentSpeed(
       Math.round(
-        charactersEnteredCounter / ((currentTime - beginTimer) / 1000 / 60),
+        (rightCharactersCounter + 1) / ((currentTime - beginTimer) / 1000 / 60),
       ),
     );
+    setRightCharactersCounter(rightCharactersCounter + 1);
   };
 
   const countCurrentAccuracy = (textLength: number): void => {
@@ -39,5 +40,6 @@ export const useStats = (startTimer: number) => {
     countCurrentAccuracy,
     countCurrentSpeed,
     setStatsToDefault,
+    setBeginTimer,
   };
 };

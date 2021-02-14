@@ -4,16 +4,15 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Card } from '../styles/AppStyles';
 import { MainButton } from '../components/MainButton';
-
 import styled from 'styled-components';
 import { colors } from '../styles/Colors';
 import { CountersContainer } from './CountersContainer';
-
 import { WarningLanguageModal } from './modals/WarningLanguageModal';
 import { ShowResultsModal } from './modals/ResultsModal';
 import { useRef } from 'react';
 import { useStats } from '../hooks/useStats';
 import { useFetchText } from '../hooks/useFetchText';
+import { typing, typingStarted } from '../utils/typingDetectingStatus';
 
 export const TypingDetecting: React.FC<{
   setTypingStats: React.Dispatch<
@@ -26,7 +25,6 @@ export const TypingDetecting: React.FC<{
 }> = ({ setTypingStats }) => {
   const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
   const [typingError, setTypingError] = useState<boolean>(false);
-
   const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
 
@@ -40,17 +38,19 @@ export const TypingDetecting: React.FC<{
     typingAccuracy,
     errorsCount,
     countCurrentAccuracy,
+    setRightCharactersCounter,
+    rightCharactersCounter,
     countCurrentSpeed,
     setStatsToDefault,
     setBeginTimer,
-  } = useStats();
+  } = useStats(text);
 
   useEffect(() => {
     getNewText();
   }, []);
 
   useEffect(() => {
-    if (userCurrentPosition === 1) {
+    if (typingStarted(userCurrentPosition)) {
       setBeginTimer(+new Date());
     }
   }, [userCurrentPosition]);
@@ -64,7 +64,9 @@ export const TypingDetecting: React.FC<{
         if (letter === text[userCurrentPosition]) {
           setTypingError(false);
           setUserCurrentPosition(userCurrentPosition + 1);
-          countCurrentSpeed();
+
+          countCurrentSpeed(rightCharactersCounter + 1);
+          setRightCharactersCounter(rightCharactersCounter + 1);
 
           if (userCurrentPosition + 1 === text.length) {
             setIsOpenResultModal(true);
@@ -151,16 +153,14 @@ export const TypingDetecting: React.FC<{
                   {letter}
                 </TextLetter>
               ))
-            : 'Loading'}
+            : 'Loading...'}
         </Text>
-
         <CountersContainer
           typingSpeed={currentSpeed}
           typingAccuracy={typingAccuracy}
           errorsCount={errorsCount}
           margin="0 0 18px"
         />
-
         <MainButton
           onClick={() => {
             setStatesToDefault();
@@ -180,7 +180,6 @@ const Wrapper = styled.div`
 
 const Text = styled.p`
   margin-bottom: 18px;
-
   user-select: none;
 `;
 
@@ -203,6 +202,5 @@ const InputUserLetter = styled.input`
   top: 0;
   left: 0;
   width: 100%;
-
   opacity: 0;
 `;

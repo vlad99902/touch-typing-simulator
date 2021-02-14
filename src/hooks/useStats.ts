@@ -1,6 +1,7 @@
+import { typing } from './../utils/typingDetectingStatus';
 import { useState, useEffect, useCallback } from 'react';
 
-export const useStats = () => {
+export const useStats = (text: string[]) => {
   const [beginTimer, setBeginTimer] = useState<number>(+new Date());
   const [currentSpeed, setCurrentSpeed] = useState<number>(0);
   const [typingAccuracy, setTypingAccuracy] = useState<number>(100);
@@ -16,14 +17,25 @@ export const useStats = () => {
     setRightCharactersCounter(0);
   };
 
-  const countCurrentSpeed = (): void => {
+  const countCurrentSpeedCallback = useCallback(() => {
+    if (typing(rightCharactersCounter, text.length))
+      return countCurrentSpeed(rightCharactersCounter);
+  }, [rightCharactersCounter]);
+
+  useEffect(() => {
+    const interval = setInterval(countCurrentSpeedCallback, 1000);
+    return () => clearInterval(interval);
+  }, [rightCharactersCounter]);
+
+  const countCurrentSpeed = (rightCharactersCount: number): void => {
+    console.log(rightCharactersCount);
     const currentTime = +new Date();
     setCurrentSpeed(
       Math.round(
-        (rightCharactersCounter + 1) / ((currentTime - beginTimer) / 1000 / 60),
+        (rightCharactersCount + 1) / ((currentTime - beginTimer) / 1000 / 60),
       ),
     );
-    setRightCharactersCounter(rightCharactersCounter + 1);
+    // setRightCharactersCounter(rightCharactersCount + 1);
   };
 
   const countCurrentAccuracy = (textLength: number): void => {
@@ -37,6 +49,8 @@ export const useStats = () => {
     currentSpeed,
     typingAccuracy,
     errorsCount,
+    rightCharactersCounter,
+    setRightCharactersCounter,
     countCurrentAccuracy,
     countCurrentSpeed,
     setStatsToDefault,

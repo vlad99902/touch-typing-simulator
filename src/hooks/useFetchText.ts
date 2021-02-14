@@ -21,7 +21,7 @@ export const useFetchText = (): [
       }
 
       setText(text[0].split(''));
-
+      setError(null);
       return text;
     } catch (error) {
       setError(error.message);
@@ -31,8 +31,5 @@ export const useFetchText = (): [
     }
   };
 
-  // const clearError = useCallback(() => setError(null), []);
-
-  // return { text, getNewText, loading, error, clearError };
   return [{ text, loading, error }, getNewText];
 };

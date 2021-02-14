@@ -1,26 +1,23 @@
-import { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useFetchText } from '../hooks/useFetchText';
 import { colors } from '../styles/Colors';
+import { Title } from '../styles/Title';
 
 type BaseTextType = {
   userCurrentPosition: number;
   typingError: boolean;
-  updateText: boolean;
+  error: string | null;
+  loading: boolean;
+  text: string[];
 };
 
 export const BaseText: React.FC<BaseTextType> = ({
   userCurrentPosition,
   typingError,
-  updateText,
+  error,
+  loading,
+  text,
 }) => {
-  const [result, getNewText] = useFetchText();
-  const { text, loading, error } = result;
-
-  useEffect(() => {
-    if (updateText) getNewText();
-  }, [updateText]);
-
   const setStylesSelectionModeOnLetter = (
     index: number,
     currentIndex: number,
@@ -40,26 +37,35 @@ export const BaseText: React.FC<BaseTextType> = ({
 
   return (
     <Text>
-      {!loading
-        ? text.map((letter, i) => (
-            <TextLetter
-              selection={setStylesSelectionModeOnLetter(
-                i,
-                userCurrentPosition,
-                typingError,
-              )}
-              colorType={setStylesToEnteredLetters(i, userCurrentPosition)}
-              key={i}
-            >
-              {letter}
-            </TextLetter>
-          ))
-        : 'Loading...'}
+      {!loading ? (
+        text.map((letter, i) => (
+          <TextLetter
+            selection={setStylesSelectionModeOnLetter(
+              i,
+              userCurrentPosition,
+              typingError,
+            )}
+            colorType={setStylesToEnteredLetters(i, userCurrentPosition)}
+            key={i}
+          >
+            {letter}
+          </TextLetter>
+        ))
+      ) : (
+        <Title fw="700" color={colors.$darkGray} fz="22px">
+          Loading...
+        </Title>
+      )}
+      {error && (
+        <Title fw="700" color={colors.$pink}>
+          Error: {error}
+        </Title>
+      )}
     </Text>
   );
 };
 
-const Text = styled.p`
+const Text = styled.div`
   margin-bottom: 18px;
   user-select: none;
 `;
@@ -68,12 +74,13 @@ const TextLetter = styled.span<{
   selection?: 'selected' | 'error';
   colorType?: boolean;
 }>`
+  white-space: pre-wrap;
   font-family: 'JetBrains Mono', monospace;
   ${(p) => {
     if (p.selection === 'selected')
       return `background-color: ${colors.$green}; border-radius: 2px`;
     if (p.selection === 'error')
-      return `background-color: ${colors.$red}; border-radius: 2px`;
+      return `background-color: ${colors.$pink}; border-radius: 2px`;
   }}
   ${(p) => p.colorType && `color: ${colors.$blue}`};
 `;

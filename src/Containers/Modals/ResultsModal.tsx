@@ -4,13 +4,13 @@ import { useCloseModalOnEnter } from '../../hooks/useCloseModalOnEnter';
 import { Title } from '../../styles/Title';
 import { CountersContainer } from '../CountersContainer';
 
-interface IWarningLanguageModal {
+type WarningLanguageModal = {
   isOpened: boolean;
   onClose: () => void;
   stats: { [key: string]: any };
-}
+};
 
-export const ShowResultsModal: React.FC<IWarningLanguageModal> = ({
+export const ShowResultsModal: React.FC<WarningLanguageModal> = ({
   isOpened,
   onClose,
   stats,

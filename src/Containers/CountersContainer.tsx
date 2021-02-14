@@ -3,14 +3,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { Counter } from '../components/Counter';
 
-interface ICounterContainer {
+type CounterContainerType = {
   typingSpeed: number;
   typingAccuracy: number;
   errorsCount: number;
   margin?: string;
-}
+};
 
-export const CountersContainer: React.FC<ICounterContainer> = ({
+export const CountersContainer: React.FC<CounterContainerType> = ({
   typingSpeed,
   typingAccuracy,
   errorsCount,
@@ -19,9 +19,11 @@ export const CountersContainer: React.FC<ICounterContainer> = ({
   return (
     <CountersPositioning margin={margin}>
       <CounterElement>
-        <Counter label="Speed" dataType="ch/min">
-          {typingSpeed}
-        </Counter>
+        <Speed>
+          <Counter label="Speed" dataType="ch/min">
+            {typingSpeed}
+          </Counter>
+        </Speed>
       </CounterElement>
       <CounterElement>
         <Counter label="Accuracy" dataType="%">
@@ -42,6 +44,10 @@ const CounterElement = styled.div`
   :last-child {
     margin-right: 0;
   }
+`;
+
+const Speed = styled.div`
+  width: 110px;
 `;
 
 const CountersPositioning = styled.div<{ margin?: string }>`

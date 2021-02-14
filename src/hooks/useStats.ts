@@ -1,4 +1,4 @@
-import { typing } from './../utils/typingDetectingStatus';
+import { typing, typingStarted } from './../utils/typingDetectingStatus';
 import { useState, useEffect, useCallback } from 'react';
 
 export const useStats = (text: string[], userCurrentPosition: number) => {
@@ -13,14 +13,17 @@ export const useStats = (text: string[], userCurrentPosition: number) => {
     setErrorsCount(0);
   };
 
+  useEffect(() => {
+    if (typingStarted(userCurrentPosition)) {
+      setBeginTimer(+new Date());
+    }
+    const intervalPtr = setInterval(countCurrentSpeedCallback, 1000);
+    return () => clearInterval(intervalPtr);
+  }, [userCurrentPosition]);
+
   const countCurrentSpeedCallback = useCallback(() => {
     if (typing(userCurrentPosition, text.length))
       return countCurrentSpeed(userCurrentPosition);
-  }, [userCurrentPosition]);
-
-  useEffect(() => {
-    const intervalPtr = setInterval(countCurrentSpeedCallback, 1000);
-    return () => clearInterval(intervalPtr);
   }, [userCurrentPosition]);
 
   const countCurrentSpeed = (userCurrentPosition: number): void => {
@@ -46,6 +49,5 @@ export const useStats = (text: string[], userCurrentPosition: number) => {
     countCurrentAccuracy,
     countCurrentSpeed,
     setStatsToDefault,
-    setBeginTimer,
   };
 };

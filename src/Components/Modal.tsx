@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 type ModalType = {
-  children: React.ReactNode;
   isOpened: boolean;
   onClose: () => void;
   maxWidth?: string;

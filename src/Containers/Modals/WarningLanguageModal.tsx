@@ -4,12 +4,12 @@ import { Modal } from '../../components/Modal';
 import { useCloseModalOnEnter } from '../../hooks/useCloseModalOnEnter';
 import { Title } from '../../styles/Title';
 
-interface IWarningLanguageModal {
+type WarningLanguageModalType = {
   isOpened: boolean;
   onClose: () => void;
-}
+};
 
-export const WarningLanguageModal: React.FC<IWarningLanguageModal> = ({
+export const WarningLanguageModal: React.FC<WarningLanguageModalType> = ({
   isOpened,
   onClose,
 }) => {

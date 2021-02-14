@@ -2,13 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import { colors } from '../styles/Colors';
 
-interface ICounter {
+type CounterType = {
   children: number;
   label: string;
   dataType: string;
-}
+};
 
-export const Counter: React.FC<ICounter> = ({ children, label, dataType }) => {
+export const Counter: React.FC<CounterType> = ({
+  children,
+  label,
+  dataType,
+}) => {
   return (
     <Inner>
       <LabelText>{label}</LabelText>

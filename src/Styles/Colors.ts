@@ -1,4 +1,4 @@
-export interface IColors {
+type ColorsType = {
   $gray: string;
   $darkGray: string;
   $black: string;
@@ -8,9 +8,9 @@ export interface IColors {
   $pink: string;
   $purple: string;
   $green: string;
-}
+};
 
-export const colors: IColors = {
+export const colors: ColorsType = {
   $gray: '#C4C4C4',
   $darkGray: '#919191',
   $black: '#343434',

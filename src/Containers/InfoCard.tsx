@@ -14,11 +14,10 @@ export const InfoCard: React.FC<{
     <Card>
       <Title margin="0 0 12px">Information</Title>
       <p>
-        If you are ready to start please start typing. Don't forget to set your
-        keyboard language to English.
+        If you are ready please start typing. Don't forget to set your keyboard
+        language to English.
       </p>
       <Title margin="12px 0">Last result</Title>
-      {/*@ts-ignore */}
       {typingStats.typingSpeed === 0 &&
       typingStats.typingAccuracy === 0 &&
       typingStats.errorsCount === 0 ? (

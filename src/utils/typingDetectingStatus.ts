@@ -13,3 +13,7 @@ export const typing = (
   1 < enteredLettersCounter && enteredLettersCounter < textLength
     ? true
     : false;
+export const typingNotEnded = (
+  enteredLettersCounter: number,
+  textLength: number,
+): boolean => (enteredLettersCounter < textLength ? true : false);

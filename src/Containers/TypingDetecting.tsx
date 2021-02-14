@@ -12,7 +12,7 @@ import { ShowResultsModal } from './modals/ResultsModal';
 import { useRef } from 'react';
 import { useStats } from '../hooks/useStats';
 import { useFetchText } from '../hooks/useFetchText';
-import { typing, typingStarted } from '../utils/typingDetectingStatus';
+import { typingNotEnded, typingStarted } from '../utils/typingDetectingStatus';
 
 export const TypingDetecting: React.FC<{
   setTypingStats: React.Dispatch<
@@ -25,7 +25,7 @@ export const TypingDetecting: React.FC<{
 }> = ({ setTypingStats }) => {
   const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
   const [typingError, setTypingError] = useState<boolean>(false);
-  const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
+  const [showResultModal, setShowResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
 
   const letterInput = useRef<HTMLInputElement>(null);
@@ -38,12 +38,10 @@ export const TypingDetecting: React.FC<{
     typingAccuracy,
     errorsCount,
     countCurrentAccuracy,
-    setRightCharactersCounter,
-    rightCharactersCounter,
     countCurrentSpeed,
     setStatsToDefault,
     setBeginTimer,
-  } = useStats(text);
+  } = useStats(text, userCurrentPosition);
 
   useEffect(() => {
     getNewText();
@@ -59,17 +57,16 @@ export const TypingDetecting: React.FC<{
     const letterCode = event.target.value.charCodeAt(0);
     const letter = event.target.value;
 
-    if (userCurrentPosition < text.length)
+    if (typingNotEnded(userCurrentPosition, text.length))
       if (letterCode >= 31 && letterCode <= 127)
         if (letter === text[userCurrentPosition]) {
           setTypingError(false);
           setUserCurrentPosition(userCurrentPosition + 1);
 
-          countCurrentSpeed(rightCharactersCounter + 1);
-          setRightCharactersCounter(rightCharactersCounter + 1);
+          countCurrentSpeed(userCurrentPosition + 1);
 
           if (userCurrentPosition + 1 === text.length) {
-            setIsOpenResultModal(true);
+            setShowResultModal(true);
           }
         } else {
           if (!typingError) {
@@ -84,7 +81,7 @@ export const TypingDetecting: React.FC<{
     event.target.value = '';
   };
 
-  const setSelectionModeOnLetter = (
+  const setStylesSelectionModeOnLetter = (
     index: number,
     currentIndex: number,
     typingError: boolean,
@@ -93,7 +90,7 @@ export const TypingDetecting: React.FC<{
     else if (index === currentIndex && typingError) return 'error';
   };
 
-  const setStyledToEnteredLetters = (
+  const setStylesToEnteredLetters = (
     index: number,
     currentIndex: number,
   ): boolean => {
@@ -109,7 +106,7 @@ export const TypingDetecting: React.FC<{
 
   const onCloseShowResultModal = (): void => {
     const endsSpeed = currentSpeed;
-    setIsOpenResultModal(false);
+    setShowResultModal(false);
     setTypingStats({
       typingSpeed: endsSpeed,
       typingAccuracy,
@@ -126,7 +123,7 @@ export const TypingDetecting: React.FC<{
         onClose={() => setIsOpenWarningModal(false)}
       />
       <ShowResultsModal
-        isOpened={isOpenResultModal}
+        isOpened={showResultModal}
         onClose={onCloseShowResultModal}
         stats={{ currentSpeed, typingAccuracy, errorsCount }}
       />
@@ -142,12 +139,12 @@ export const TypingDetecting: React.FC<{
           {!loading
             ? text.map((letter, i) => (
                 <TextLetter
-                  selection={setSelectionModeOnLetter(
+                  selection={setStylesSelectionModeOnLetter(
                     i,
                     userCurrentPosition,
                     typingError,
                   )}
-                  colorType={setStyledToEnteredLetters(i, userCurrentPosition)}
+                  colorType={setStylesToEnteredLetters(i, userCurrentPosition)}
                   key={i}
                 >
                   {letter}

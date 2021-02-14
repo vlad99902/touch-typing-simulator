@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { fetchText } from '../functions/FetchText';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Card } from '../styles/AppStyles';
@@ -14,6 +13,7 @@ import { WarningLanguageModal } from './modals/WarningLanguageModal';
 import { ShowResultsModal } from './modals/ResultsModal';
 import { useRef } from 'react';
 import { useStats } from '../hooks/useStats';
+import { useFetchText } from '../hooks/useFetchText';
 
 export const TypingDetecting: React.FC<{
   setTypingStats: React.Dispatch<
@@ -24,12 +24,16 @@ export const TypingDetecting: React.FC<{
     }>
   >;
 }> = ({ setTypingStats }) => {
-  const [text, setText] = useState<string[]>([]);
   const [userCurrentPosition, setUserCurrentPosition] = useState<number>(0);
-  const [error, setError] = useState<boolean>(false);
+  const [typingError, setTypingError] = useState<boolean>(false);
 
   const [isOpenResultModal, setIsOpenResultModal] = useState<boolean>(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState<boolean>(false);
+
+  const letterInput = useRef<HTMLInputElement>(null);
+
+  const [result, getNewText] = useFetchText();
+  const { text, loading, error } = result;
 
   const {
     currentSpeed,
@@ -41,15 +45,8 @@ export const TypingDetecting: React.FC<{
     setBeginTimer,
   } = useStats();
 
-  const letterInput = useRef<HTMLInputElement>(null);
-
-  const getText = async () => {
-    const text = await fetchText();
-    setText(text.split(''));
-  };
-
   useEffect(() => {
-    getText();
+    getNewText();
   }, []);
 
   useEffect(() => {
@@ -65,7 +62,7 @@ export const TypingDetecting: React.FC<{
     if (userCurrentPosition < text.length)
       if (letterCode >= 31 && letterCode <= 127)
         if (letter === text[userCurrentPosition]) {
-          setError(false);
+          setTypingError(false);
           setUserCurrentPosition(userCurrentPosition + 1);
           countCurrentSpeed();
 
@@ -73,10 +70,10 @@ export const TypingDetecting: React.FC<{
             setIsOpenResultModal(true);
           }
         } else {
-          if (!error) {
+          if (!typingError) {
             countCurrentAccuracy(text.length);
           }
-          setError(true);
+          setTypingError(true);
         }
       else {
         setIsOpenWarningModal(true);
@@ -88,9 +85,10 @@ export const TypingDetecting: React.FC<{
   const setSelectionModeOnLetter = (
     index: number,
     currentIndex: number,
+    typingError: boolean,
   ): 'selected' | 'error' | undefined => {
-    if (index === currentIndex && !error) return 'selected';
-    else if (index === currentIndex && error) return 'error';
+    if (index === currentIndex && !typingError) return 'selected';
+    else if (index === currentIndex && typingError) return 'error';
   };
 
   const setStyledToEnteredLetters = (
@@ -102,9 +100,8 @@ export const TypingDetecting: React.FC<{
   };
 
   const setStatesToDefault = (): void => {
-    setError(false);
+    setTypingError(false);
     setUserCurrentPosition(0);
-    setText([]);
     setStatsToDefault();
   };
 
@@ -117,7 +114,7 @@ export const TypingDetecting: React.FC<{
       errorsCount,
     });
     setStatesToDefault();
-    getText();
+    getNewText();
   };
 
   return (
@@ -135,22 +132,26 @@ export const TypingDetecting: React.FC<{
         autoFocus
         name="userInputLetter"
         onChange={(event) => inputChangeHandler(event)}
-        onBlur={() =>
-          letterInput && letterInput.current && letterInput.current.focus()
-        }
+        onBlur={() => letterInput?.current?.focus()}
         ref={letterInput}
       />
       <Card>
         <Text>
-          {text.map((letter, i) => (
-            <TextLetter
-              selection={setSelectionModeOnLetter(i, userCurrentPosition)}
-              colorType={setStyledToEnteredLetters(i, userCurrentPosition)}
-              key={i}
-            >
-              {letter}
-            </TextLetter>
-          ))}
+          {!loading
+            ? text.map((letter, i) => (
+                <TextLetter
+                  selection={setSelectionModeOnLetter(
+                    i,
+                    userCurrentPosition,
+                    typingError,
+                  )}
+                  colorType={setStyledToEnteredLetters(i, userCurrentPosition)}
+                  key={i}
+                >
+                  {letter}
+                </TextLetter>
+              ))
+            : 'Loading'}
         </Text>
 
         <CountersContainer
@@ -163,7 +164,7 @@ export const TypingDetecting: React.FC<{
         <MainButton
           onClick={() => {
             setStatesToDefault();
-            getText();
+            getNewText();
           }}
         >
           Restart
